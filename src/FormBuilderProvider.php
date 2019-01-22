@@ -35,6 +35,6 @@ class FormBuilderProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->loadViewsFrom(__DIR__.'/views', 'component');
+        $this->loadViewsFrom(__DIR__.'/Views', 'component');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace YKuadrat\FormBuilder;
+namespace YKuadrat\FormBuilder\Helpers;
 
 /**
  * 
