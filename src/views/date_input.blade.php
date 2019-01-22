@@ -1,6 +1,6 @@
 @php
 if (!is_array($attributes)) $attributes = [];
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 @endphp
 
 <div class="form-group {{ !$errors->has($name) ?: 'has-error' }}">

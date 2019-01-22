@@ -1,7 +1,7 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 
 if ($values === null || $values === []) $values = [''];
 

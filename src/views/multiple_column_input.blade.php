@@ -1,7 +1,7 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 
 if (empty($values)) $values = [''];
 
@@ -36,7 +36,7 @@ $isFirst = true;
 								@foreach ($columns as $key => $column)
 
 									<?php 
-										$column['htmlOptions'] = App\Components\FormBuilderHelper::arrayToHtmlAttribute(array_merge([
+										$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 											'class' => 'form-control'
 										], $column['elOptions'])) 
 									?>
@@ -81,7 +81,7 @@ $isFirst = true;
 		@foreach ($columns as $column)
 		
 			<?php 
-				$column['htmlOptions'] = App\Components\FormBuilderHelper::arrayToHtmlAttribute(array_merge([
+				$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 					'class' => 'form-control'
 				], $column['elOptions'])) 
 			?>

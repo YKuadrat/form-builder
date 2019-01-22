@@ -8,7 +8,7 @@ $attributes['elOptions']['class'] = 'select2 form-control';
 $attributes['elOptions']['id'] = $attributes['elOptions']['id'] ?? 'select2-' . $name;
 
 // CALLING SETUP DEFAULT CONFIG
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
 $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 @endphp
 

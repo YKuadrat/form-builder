@@ -14,7 +14,7 @@ $attributes['text'] = $attributes['text'] ?? 'obj.name';
 $attributes['key'] = isset($attributes['key']) ? "obj.".$attributes['key'] : 'obj.id';
 
 // CALLING SETUP DEFAULT CONFIG
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
 $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 

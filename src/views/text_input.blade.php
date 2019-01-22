@@ -1,6 +1,6 @@
 @php
 if (!is_array($attributes)) $attributes = [];
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes, $errors);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes, $errors);
 @endphp
 
 <div class="{{ $config['divContainerClass'] }} {{ !$errors->has($name) ?: 'has-danger' }}">
