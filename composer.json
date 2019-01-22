@@ -23,7 +23,7 @@
         },
         "laravel": {
             "providers": [
-                "YKuardat\\FormBuilder\\FormBuilderProvider"
+                "YKuadrat\\FormBuilder\\FormBuilderProvider"
             ],
             "aliases": {
                 "Form": "Collective\\Html\\FormFacade",
