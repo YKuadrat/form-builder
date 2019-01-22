@@ -1,0 +1,20 @@
+{
+    "name": "ykuadrat/form-builder",
+    "description": "Adjust and Enhance from laravelcollective",
+    "type": "library",
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Yasser",
+            "email": "yassersultan1999@gmail.com"
+        }
+    ],
+    "require": {
+        "laravelcollective/html": "^5.7.1",
+    },
+    "autoload": {
+        "psr-4": {
+            "YKuadrat\\FormBuilder\\": "src/"
+        }
+    },
+}
