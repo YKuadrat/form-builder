@@ -28,7 +28,7 @@
             "aliases": {
                 "Form": "Collective\\Html\\FormFacade",
                 "Html": "Collective\\Html\\HtmlFacade",
-                "FormBuilderHelper": "YKuadrat\\FormBuilder\\FormBuilderHelper"
+                "FormBuilderHelper": "YKuadrat\\FormBuilder\\Helpers\\FormBuilderHelper"
             }
         }
     },
