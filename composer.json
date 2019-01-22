@@ -1,8 +1,8 @@
 {
-    "name": "ykuadrat/form-builder",
+    "name": "ykuadrat/laravel-form-builder",
     "description": "Adjust and Enhance from laravelcollective",
     "type": "library",
-    "license": "MIT License",
+    "license": "MIT",
     "authors": [
         {
             "name": "Yasser",
