@@ -63,6 +63,11 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 	@endif
 </div>
 
+@section('fb-select2-resource')
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/form-builder/plugins/select2/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('vendor/form-builder/plugins/select2/select2.min.js') }}">
+@endsection
+
 @push('additional-js')
 <script type="text/javascript">
 	$(document).ready(function() {
