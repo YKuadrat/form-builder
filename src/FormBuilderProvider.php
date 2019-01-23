@@ -37,6 +37,7 @@ class FormBuilderProvider extends ServiceProvider
     {
         $this->loadViews();
         $this->publishAssets();
+        $this->publishConfig();
     }
 
     private function loadViews()
@@ -54,6 +55,17 @@ class FormBuilderProvider extends ServiceProvider
         $this->publishes([
             $this->packagePath('resources/assets') => public_path('vendor/form-builder'),
         ], 'assets');
+    }
+
+    private function publishConfig()
+    {
+        $configPath = $this->packagePath('config/formbuilder.php');
+
+        $this->publishes([
+            $configPath => config_path('formbuilder.php'),
+        ], 'config');
+
+        $this->mergeConfigFrom($configPath, 'formbuilder');
     }
 
     private function packagePath($path)
