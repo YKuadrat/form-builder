@@ -85,7 +85,8 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 			url: "{{ $url }}",
 			data: function(params) {
 				var data = {
-					q: params.term
+					q: params.term,
+					page: params.page
 				}
 				@foreach ($config['ajaxParams'] as $key => $val)
 					data.{{$key}} = {!! $val !!}
