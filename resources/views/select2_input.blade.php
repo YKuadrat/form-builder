@@ -82,6 +82,7 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 		// IF THE SELECT2 IS REQUEST DATA BY AJAX
 		@if ($isDataRequestByAjax)
 		select2Options_{{$name}}.ajax = {
+			delay: 250,
 			url: "{{ $url }}",
 			data: function(params) {
 				var data = {
