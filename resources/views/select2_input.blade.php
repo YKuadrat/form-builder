@@ -41,12 +41,18 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 	@endif
 
 			<select name="{{ isset($config['pluginOptions']['multiple']) && $config['pluginOptions']['multiple'] ? $name . '[]' : $name }}" <?= $config['htmlOptions'] ?>>
+
 				@if (!$isDataRequestByAjax)
 					<option></option>
 					@foreach ($options as $key => $option)
 		                <option value="{{ $key }}">{{ $option }}</option>
 					@endforeach
+				@else
+					@if(!empty($value) && is_array($value))
+						<option value="{{ $value[0] }}" selected="selected">{{ $value[1] }}</option>
+					@endif
 				@endif
+
             </select>
 
             <div class="error-container">
@@ -74,8 +80,7 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 		var select2Options_{{$name}} = Object.assign({
 				placeholder: "{{ $config['elOptions']['placeholder'] }}",
 		    	allowClear: true,//
-			}, {!! json_encode($config['pluginOptions']) !!}),
-			select2val_{{$name}} = {!! !is_array($value) ? json_encode([$value]) : json_encode($value) !!}
+			}, {!! json_encode($config['pluginOptions']) !!})
 
 
 
@@ -83,7 +88,7 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 		@if ($isDataRequestByAjax)
 		select2Options_{{$name}}.ajax = {
 			delay: 250,
-			url: "{{ $url }}",
+			url: "{!! $url !!}",
 			data: function(params) {
 				var data = {
 					q: params.term,
@@ -121,7 +126,12 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 		    select2Options_{{$name}}.dropdownParent = $('<?= $config['pluginOptions']["dropdownParent"] ?>')
 		@endif
 
-	    $('#{{ $config['elOptions']['id'] }}').select2(select2Options_{{$name}}).val(select2val_{{$name}}).trigger('change');
+	    var initSelect2_{{ $name }} = $('#{{ $config['elOptions']['id'] }}').select2(select2Options_{{$name}});
+
+	    @if(!$isDataRequestByAjax)
+			select2val_{{$name}} = {!! !is_array($value) ? json_encode([$value]) : json_encode($value) !!}
+		    initSelect2_{{ $name }}.val(select2val_{{$name}}).trigger('change')
+	    @endif
 	})
 </script>
 @endpush
