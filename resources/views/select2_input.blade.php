@@ -74,6 +74,10 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 <script type="text/javascript" src="{{ asset('vendor/form-builder/plugins/select2/select2.min.js') }}"></script>
 @endsection
 
+@section('fb-resource')
+<script type="text/javascript" src="{{ asset('vendor/form-builder/js/select2-handler.js') }}"></script>
+@stop
+
 @push('additional-js')
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -132,6 +136,14 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 			select2val_{{$name}} = {!! !is_array($value) ? json_encode([$value]) : json_encode($value) !!}
 		    initSelect2_{{ $name }}.val(select2val_{{$name}}).trigger('change')
 	    @endif
+
+
+
+	    // IF VALUE CHANGED TRIGGER
+	    $('#{{ $config['elOptions']['id'] }}').change(function() {
+			$(this).parents('.form-group').removeClass('has-danger')
+			$(this).parents('.form-group').find('.error-container').html('')
+		})
 	})
 </script>
 @endpush

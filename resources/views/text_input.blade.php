@@ -42,3 +42,12 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes, $errors);
 	</div>
 	@endif
 </div>
+
+@push('additional-js')
+<script type="text/javascript">
+	$('input[name="{{ $name }}"]').keyup(function() {
+		$(this).parents('.form-group').removeClass('has-danger')
+		$(this).parents('.form-group').find('.error-container').html('');
+	})
+</script>
+@endpush
