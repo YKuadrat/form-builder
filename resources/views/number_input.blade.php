@@ -3,7 +3,7 @@ if (!is_array($attributes)) $attributes = [];
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 @endphp
 
-<div class="form-group {{ !$errors->has($name) ?: 'has-error' }}">
+<div class="{{ $config['divContainerClass'] }} {{ !$errors->has($name) ?: 'has-danger' }}">
 	@if ($config['useLabel'])
 	<div class="row">
 		<div class="{{ $config['labelContainerClass'] }}">
@@ -29,12 +29,23 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 			</div>
 			@endif
 
-			@if($errors->has($name))
-			<span id="helpBlock2" class="help-block">{{ $errors->first($name) }}</span>	
-			@endif
+			<div class="error-container">
+				@if($errors->has($name))
+	            <div class="form-control-feedback">{{ $errors->first($name) }}</div>
+				@endif
+			</div>
 
 	@if ($config['useLabel'])
 		</div>
 	</div>
 	@endif
 </div>
+
+@push('additional-js')
+<script type="text/javascript">
+	$('input[name="{{ $name }}"]').on('keyup, change', function() {
+		$(this).parents('.form-group').removeClass('has-danger')
+		$(this).parents('.form-group').find('.error-container').html('');
+	})
+</script>
+@endpush
