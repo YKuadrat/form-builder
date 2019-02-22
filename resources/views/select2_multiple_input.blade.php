@@ -27,7 +27,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 				<div class="col-md-12">
 					<div class="input-group" style="margin-bottom: 10px">
 						<div style="width:90%;">
-							{{ Form::select2Input($name, $value, $options, array_merge($config, ['useLabel' => false])) }}
+							{{ Form::select2Input($name, null, $options, array_merge($config, ['useLabel' => false])) }}
 						</div>
 						<div style="width:10%">
 							<span class="input-group-append">
@@ -43,13 +43,16 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>{{$name}} Name</th>
+								<th>{{ $config['labelOrig'] }}</th>
+								@foreach ($config['additionalFields'] as $id => $label)
+									<th>{{ ucwords(str_replace('_', ' ', $label)) }}</th>
+								@endforeach
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td colspan="3">{{$name}} is Empty.</td>
+								<td colspan="3">{{$config['labelOrig']}} is Empty.</td>
 							</tr>
 						</tbody>
 					</table>
@@ -99,14 +102,20 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 				  "hideMethod": "slideUp"
 				};
 
-				toastr.warning('{{$name}} '+ v.text +' has been selected.', "Warning!");
+				toastr.warning('{{$config['labelOrig']}} '+ v.text +' has been selected.', "Warning!");
 			} else {
 				select2val_{{$name}}.push({
 					id: v.id,
 					name: v.text
+					@foreach ($config['additionalFields'] as $id => $field) 
+						,{{ $field }}: $('{{ $id }}').val()
+					@endforeach
 				})
 				generateTable_{{$name}}()
 			    $('#{{$config['elOptions']["id"]}}').val({}).trigger('change');
+			    @foreach ($config['additionalFields'] as $id => $field) 
+			    	$('{{ $id }}').val('')
+				@endforeach
 			}
 		})
 	}
@@ -121,11 +130,17 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	            	'<tr>' +
 	            		'<td>' + number + '</td>' +
 	            		'<td>' + v.name + '</td>' +
+	            		@foreach ($config['additionalFields'] as $id => $field) 
+		            		'<td>' + v.{{ $field }} + '</td>' +
+						@endforeach
 	            		'<td>' + 
 	            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.id +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
 	            		 '</td>' +
 	            		 '<td style="display:none">' +
 	            			'<input type="hidden" value="'+ v.id +'" name="{{$name}}[]">' +
+		            		 @foreach ($config['additionalFields'] as $id => $field) 
+		            			'<input type="hidden" value="'+ v.{{ $field }} +'" name="{{ $field }}[]">' +
+							 @endforeach
 	            		 '</td>' +
 	            	'</tr>' 
 	            )
@@ -133,7 +148,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 		} else {
 			$(".{{'table-select2-' . $name}} tbody").append(
 	        	'<tr>' +
-	        		'<td colspan="3">{{$name}} is Empty.</td>' +
+	        		'<td colspan="3">{{$config['labelOrig']}} is Empty.</td>' +
 	        	'</tr>' 
 	        )
 		}
@@ -149,9 +164,10 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	function getSelectedVal_{{$name}}(id, update = false) {
 		var foundVal = $.grep(select2val_{{$name}}, function(v) {
 			if(update){
-				return v.id !== id
+				console.log(v.id + ' : ' + id)
+				return v.id != id
 			}
-		    return v.id === id;
+		    return v.id == id;
 		});
 
 		if(update) {
