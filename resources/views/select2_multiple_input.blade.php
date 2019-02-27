@@ -9,6 +9,7 @@ $attributes['elOptions']['id'] = $attributes['elOptions']['id'] ?? 'select2-' . 
 
 // CALLING SETUP DEFAULT CONFIG
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
+$config['additionalFields'] = $attributes['additionalFields'] ?? [];
 $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 @endphp
 
