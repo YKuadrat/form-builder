@@ -1,60 +1,41 @@
 @php
 if (!is_array($attributes)) $attributes = [];
-
-$useLabel = true;
-if (isset($attributes['useLabel'])) {
-	$useLabel = $attributes['useLabel'];
-	unset($attributes['useLabel']);
-}
-
-$labelText = isset($attributes['labelText']) ? $attributes['labelText'] : ucwords(implode(' ', explode('_', $name))) . (isset($attributes['required']) ? ' <span class="status-decline">*</span>' : '');
-
-$formAlignment = 'horizontal';
-if (isset($attributes['formAlignment'])) {
-	$formAlignment = $attributes['formAlignment'];
-	unset($attributes['formAlignment']);
-}
-
-
-$labelContainerClass = $formAlignment === 'vertical' ? 'col-md-12' : 'col-md-3';
-$inputContainerClass = $formAlignment === 'vertical' ? 'col-md-12' : 'col-md-9';
-if ($formAlignment === 'horizontal') {
-	if (isset($attributes['labelContainerClass'])) {
-		$labelContainerClass = $attributes['labelContainerClass'];
-		unset($attributes['labelContainerClass']);
-	}
-	if (isset($attributes['inputContainerClass'])) {
-		$inputContainerClass = $attributes['inputContainerClass'];
-		unset($attributes['inputContainerClass']);
-	}
-}
-
-
-$configAttributes = array_merge([
-	'class' => 'form-control',
-], $attributes);
-
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes, $errors);
+unset($config['elOptions']['placeholder']);
 @endphp
 
-<div class="form-group {{ !$errors->has($name) ?: 'has-error' }}">
-	@if ($useLabel)
+<div class="{{ $config['divContainerClass'] }} {{ !$errors->has($name) ?: 'has-danger' }}">
+	@if ($config['useLabel'])
 	<div class="row">
-		<div class=" {{ $labelContainerClass }}">
+		<div class="{{ $config['labelContainerClass'] }}">
 			<label class="col-form-label">
-				{!! $labelText !!}
+				{!! $config['labelText'] !!}
 			</label>
 		</div>
-		<div class="{{ $inputContainerClass }}">
+		<div class="{{ $config['inputContainerClass'] }}">
 	@endif
 
-			{{ Form::select($name, $options, $value, $configAttributes) }}
+				{{ Form::select($name, $options, $value, $config['elOptions']) }}
 
-			@if($errors->has($name))
-			<span id="helpBlock2" class="help-block">{{ $errors->first($name) }}</span>	
-			@endif
+			<div class="error-container">
+				@if($errors->has($name))
+	            <div class="form-control-feedback">{{ $errors->first($name) }}</div>
+				@endif
+			</div>
 
-	@if ($useLabel)
+            {!! @$config['info'] !!}
+
+	@if ($config['useLabel'])
 		</div>
 	</div>
 	@endif
 </div>
+
+@push('additional-js')
+<script type="text/javascript">
+	$('input[name="{{ $name }}"]').keyup(function() {
+		$(this).parents('.form-group').removeClass('has-danger')
+		$(this).parents('.form-group').find('.error-container').html('');
+	})
+</script>
+@endpush
