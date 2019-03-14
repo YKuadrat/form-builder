@@ -16,7 +16,7 @@ class FormBuilderHelper
 
 		// SETUP LABEL
 		$config['textFormat'] = implode(' ', explode('_', $name));
-		$config['labelText'] = $config['labelText'] ?? ucwords($config['textFormat']);
+		$config['labelText'] = $config['customLabel'] = $config['labelText'] ?? ucwords($config['textFormat']);
 		$config['labelText'] = isset($config['elOptions']['required']) ? $config['labelText'] . ' ' . $config['requiredLabelText'] : $config['labelText'];
 		$config['labelText'] = $config['boldLabel'] ? '<strong>' . $config['labelText'] . '</strong>' : $config['labelText'];
 
@@ -33,7 +33,7 @@ class FormBuilderHelper
 		$config['addonsConfig'] = $config['addons'];
 
 		// FOR ELEMENT PROPERTY
-		$config['elOptions']['placeholder'] = $config['elOptions']['placeholder'] ?? 'Please enter ' . $config['textFormat']. ' here';
+		$config['elOptions']['placeholder'] = $config['elOptions']['placeholder'] ?? 'Please enter ' . $config['customLabel']. ' here';
 
 		// FOR FORMATING ARRAY elOptions INTO HTML ATTRIBUTES
 		foreach ($config['elOptions'] as $attribute => $attributeValue) {
