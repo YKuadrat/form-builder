@@ -29,9 +29,13 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 			</div>
 			@endif
 
-			@if($errors->has($name))
-			<span id="helpBlock2" class="help-block">{{ $errors->first($name) }}</span>	
-			@endif
+			<div class="error-container">
+				@if($errors->has($name))
+	            <div class="form-control-feedback">{{ $errors->first($name) }}</div>
+				@endif
+			</div>
+
+            {!! @$config['info'] !!}
 
 	@if ($config['useLabel'])
 		</div>
