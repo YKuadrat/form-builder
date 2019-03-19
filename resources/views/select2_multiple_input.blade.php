@@ -44,16 +44,16 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>{{ $config['labelOrig'] }}</th>
+								<th>{{ $config['customLabel'] }}</th>
 								@foreach ($config['additionalFields'] as $id => $label)
-									<th>{{ ucwords(str_replace('_', ' ', $label)) }}</th>
+									<th>{{ ucwords(str_replace('_', ' ', $label['attribute'] ?? $label)) }}</th>
 								@endforeach
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td colspan="3">{{$config['labelOrig']}} is Empty.</td>
+								<td colspan="3">{{$config['customLabel']}} is Empty.</td>
 							</tr>
 						</tbody>
 					</table>
@@ -103,13 +103,13 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 				  "hideMethod": "slideUp"
 				};
 
-				toastr.warning('{{$config['labelOrig']}} '+ v.text +' has been selected.', "Warning!");
+				toastr.warning('{{$config['customLabel']}} '+ v.text +' has been selected.', "Warning!");
 			} else {
 				select2val_{{$name}}.push({
 					id: v.id,
 					name: v.text
 					@foreach ($config['additionalFields'] as $id => $field) 
-						,{{ $field }}: $('{{ $id }}').val()
+						,{{ $field['attribute'] ?? $field }}: $('{{ $id }}').val() === "" ? "{{ $field['defaultValue'] ?? '' }}" : $('{{ $id }}').val()
 					@endforeach
 				})
 				generateTable_{{$name}}()
@@ -132,7 +132,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	            		'<td>' + number + '</td>' +
 	            		'<td>' + v.name + '</td>' +
 	            		@foreach ($config['additionalFields'] as $id => $field) 
-		            		'<td>' + v.{{ $field }} + '</td>' +
+		            		'<td>' + v.{{ $field['attribute'] ?? $field }} + '</td>' +
 						@endforeach
 	            		'<td>' + 
 	            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.id +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
@@ -140,7 +140,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	            		 '<td style="display:none">' +
 	            			'<input type="hidden" value="'+ v.id +'" name="{{$name}}[]">' +
 		            		 @foreach ($config['additionalFields'] as $id => $field) 
-		            			'<input type="hidden" value="'+ v.{{ $field }} +'" name="{{ $field }}[]">' +
+		            			'<input type="hidden" value="'+ v.{{ $field['attribute'] ?? $field }} +'" name="{{ $field['attribute'] ?? $field }}[]">' +
 							 @endforeach
 	            		 '</td>' +
 	            	'</tr>' 
@@ -149,7 +149,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 		} else {
 			$(".{{'table-select2-' . $name}} tbody").append(
 	        	'<tr>' +
-	        		'<td colspan="3">{{$config['labelOrig']}} is Empty.</td>' +
+	        		'<td colspan="3">{{$config['customLabel']}} is Empty.</td>' +
 	        	'</tr>' 
 	        )
 		}
