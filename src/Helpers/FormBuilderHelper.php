@@ -33,6 +33,7 @@ class FormBuilderHelper
 		$config['addonsConfig'] = $config['addons'];
 
 		// FOR ELEMENT PROPERTY
+		$config['elOptions']['id'] = $config['elOptions']['id'] ?? $config['textFormat'];
 		$config['elOptions']['placeholder'] = $config['elOptions']['placeholder'] ?? 'Please enter ' . $config['customLabel']. ' here';
 
 		// FOR FORMATING ARRAY elOptions INTO HTML ATTRIBUTES
