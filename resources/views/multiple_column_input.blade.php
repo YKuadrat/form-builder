@@ -25,12 +25,16 @@ $isFirst = true;
 						<thead>
 							<tr>
 								@foreach ($columns as $column)
-									<th>{{ ucwords(implode(' ', explode('_', $column['name']))) }}</th>
+									<?php $column['type'] = $column['type'] ?? 'text'; ?>
+									@if ($column['type'] != 'hidden')
+										<th>{{ ucwords(implode(' ', explode('_', $column['name']))) }}</th>
+									@endif
 								@endforeach
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
+							<?php $index = 1 ?>
 							@foreach ($values as $v)
 							<tr class="multipleColumnRow">
 								@foreach ($columns as $key => $column)
@@ -38,17 +42,38 @@ $isFirst = true;
 									<?php 
 										$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 											'class' => 'form-control'
-										], $column['elOptions'])) 
+										], $column['elOptions'] ?? []));
+
+										$column['type'] = $column['type'] ?? 'text';
 									?>
 
-									<td {{ $column['options'] ?? ''}}>
-										<input type="{{ $column['type'] }}" value="{{ $v[$column['name']] ?? '' }}" name="{{ $name .'[1]['. $column['name'] .']' }}" {!! $column['htmlOptions'] !!}>
+									<td {!! $column['type'] == 'hidden' ? "style='display: none'" : ($column['options'] ?? '') !!}>
+										@if ($column['type'] == 'select2')
+											{{ 
+												Form::select2Input($column['name'], null, $column['data'], [
+													'key' => 'schema',
+													'useLabel' => false,
+													'elOptions' => [
+														'name' => $name .'['. $index .']['. $column['name'] .']',
+
+														'id' => "multipleColumnRow_select2-" . $column['name'] . "_" . $index
+													]
+												]) 
+											}}
+										@else
+											<input type="{{ $column['type'] }}" value="{{ $v[$column['name']] ?? '' }}" name="{{ $name .'['. $index .']['. $column['name'] .']' }}" {!! $column['htmlOptions'] !!}>
+										@endif
 									</td>
 								@endforeach
 								<td>
-									<button type="button" class="btn btn-primary multipleColumnInput_addRowBtn-{{  $name  }}"><span class="fas fa-plus"></span></button>
+									@if ($index == 1)
+										<button type="button" class="btn btn-primary multipleColumnInput_addRowBtn-{{  $name  }}"><span class="fas fa-plus"></span></button>
+									@else
+										<button type="button" class="btn btn-danger multipleInput_removeRowBtn-{{  $name  }}"><span class="fa fa-times"></span></button>
+									@endif
 								</td>
 							</tr>
+							<?php $index++ ?>
 							@endforeach
 						</tbody>
 					</table>
@@ -83,12 +108,20 @@ $isFirst = true;
 			<?php 
 				$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 					'class' => 'form-control'
-				], $column['elOptions'])) 
+				], $column['elOptions'] ?? []));
+
+				$column['type'] = $column['type'] ?? 'text'
 			?>
 
-			multipleColumn_columns_{{ $name }} += '<td {{ $column["options"] ?? "" }}>' + 
-				'<input type="{{ $column['type'] ?? 'text' }}" value="" name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" {!! $column['htmlOptions'] !!}>' + 
-			'</td>' 		
+			multipleColumn_columns_{{ $name }} += '<td {!! $column['type'] == 'hidden' ? "style=\"display: none\"" : ($column['options'] ?? '') !!}>' + 
+
+				@if ($column['type'] == 'select2')
+					'<select name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" id="multipleColumnRow_select2-{{ $column['name'] }}_' + lastRow_{{ $name }} + '"> </select>'
+				@else
+					'<input type="{{ $column['type'] }}" value="" name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" {!! $column['htmlOptions'] !!}>' + 
+				@endif
+
+			'</td>'
 		@endforeach
 		return multipleColumn_columns_{{ $name }}
 	}
@@ -102,10 +135,32 @@ $isFirst = true;
 				'</td>' +
 			'</tr>'
 		)
+
+		@foreach ($columns as $column)
+			<?php $column['type'] = $column['type'] ?? 'text'?>
+			@if ($column['type'] == 'select2')
+				$('#multipleColumnRow_select2-{{ $column['name'] }}_' + lastRow_{{ $name }}).select2(select2Options_{{ $column['name'] }})
+			@endif
+		@endforeach
 	}
 
 	$('body').on('click', '.multipleColumnInput_addRowBtn-{{  $name  }}', function(){
 		generateRow_{{ $name }}();
 	})
+
+	$(document).ready(function() {
+	<?php $index = 1; ?>
+
+	// FOR SELECT2 SET VALUE
+	@foreach ($values as $v)
+		@foreach ($columns as $column)
+			<?php $column['type'] = $column['type'] ?? 'text' ?>
+			@if ($column['type'] == 'select2')
+				setSelect2IfPatchModal($('{{ "#multipleColumnRow_select2-" . $column['name'] . "_" . $index }}'), "{{ Illuminate\Support\Arr::get($v, $column['value'][0] ?? '') }}", "{{ Illuminate\Support\Arr::get($v, $column['value'][1] ?? '') }}")
+			@endif
+		@endforeach
+		<?php $index++ ?>
+	@endforeach
+	});
 </script>
 @endpush
