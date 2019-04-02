@@ -18,6 +18,9 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
 $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 
+$fieldName = isset($config['pluginOptions']['multiple']) && $config['pluginOptions']['multiple'] ? $name . '[]' : $name;
+$fieldName = $config['elOptions']['name'] ?? $fieldName;
+
 // FORMATTING TEXT BY TEMPLATE 
 // if (is_array($config['text'])) {
 // 	$text = null;
@@ -40,7 +43,7 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 		<div class="{{ $config['inputContainerClass'] }}">
 	@endif
 
-			<select name="{{ isset($config['pluginOptions']['multiple']) && $config['pluginOptions']['multiple'] ? $name . '[]' : $name }}" <?= $config['htmlOptions'] ?>>
+			<select name="{{ $fieldName }}" <?= $config['htmlOptions'] ?>>
 
 				@if (!$isDataRequestByAjax)
 					<option></option>
@@ -80,14 +83,12 @@ $config['ajaxParams'] = $attributes['ajaxParams'] ?? [];
 
 @push('additional-js')
 <script type="text/javascript">
-	$(document).ready(function() {
 		var select2Options_{{$name}} = Object.assign({
 				placeholder: "{{ $config['elOptions']['placeholder'] }}",
 		    	allowClear: true,//
 			}, {!! json_encode($config['pluginOptions']) !!})
 
-
-
+	$(document).ready(function() {
 		// IF THE SELECT2 IS REQUEST DATA BY AJAX
 		@if ($isDataRequestByAjax)
 		select2Options_{{$name}}.ajax = {
