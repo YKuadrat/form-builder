@@ -14,6 +14,7 @@ class FormBuilderProvider extends ServiceProvider
      */
     public function boot()
     {
+        FormFacade::component('fileInput', 'form-builder::file_input', ['name', 'value', 'attributes']);
         FormFacade::component('textInput', 'form-builder::text_input', ['name', 'value', 'attributes']);
         FormFacade::component('passwordInput', 'form-builder::password_input', ['name', 'value', 'attributes']);
         FormFacade::component('emailInput', 'form-builder::email_input', ['name', 'value', 'attributes']);
