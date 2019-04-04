@@ -1,6 +1,15 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
+
+$config['pluginOptions'] = array_merge([
+
+	'todayBtn' => 'linked',
+	'clearBtn' => true,
+	'autoclose' => true,
+	'todayHighlight' => true
+
+], $config['pluginOptions'] ?? [])
 @endphp
 
 <div class="form-group {{ !$errors->has($name) ?: 'has-error' }}">
@@ -20,7 +29,7 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 				@endif
 			@endif
 
-				{{ Form::date($name, $value, $config['elOptions']) }}
+				{{ Form::text($name, $value, $config['elOptions']) }}
 
 			@if (!empty($config['addonsConfig']))
 				@if ($config['addonsConfig']['position'] === 'right')
@@ -42,3 +51,12 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 	</div>
 	@endif
 </div>
+
+@push('additional-js')
+	<script type="text/javascript">
+		var datepicker_{{ $name }} = {!! json_encode($config['pluginOptions']) !!}
+		$(document).ready(function() {
+			$('#{{ $config['elOptions']['id'] }}').datepicker(datepicker_{{ $name }});
+		});
+	</script>
+@endpush
