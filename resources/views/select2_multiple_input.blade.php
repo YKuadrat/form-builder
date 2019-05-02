@@ -7,6 +7,10 @@ $attributes['elOptions']['class'] = 'select2 form-control';
 // SET DEFAULT ID
 $attributes['elOptions']['id'] = $attributes['elOptions']['id'] ?? 'select2-' . $name;
 
+// SET DEFAULT FOR FORMATTED SELECT2 DATA FORMAT
+$attributes['text'] = $attributes['text'] ?? 'obj.name';
+$attributes['key'] = isset($attributes['key']) ? $attributes['key'] : 'id';
+
 // CALLING SETUP DEFAULT CONFIG
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
 $config['additionalFields'] = $attributes['additionalFields'] ?? [];
@@ -106,7 +110,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 				toastr.warning('{{$config['customLabel']}} '+ v.text +' has been selected.', "Warning!");
 			} else {
 				select2val_{{$name}}.push({
-					id: v.id,
+					{{ $config['key'] }}: v.id,
 					name: v.text
 					@foreach ($config['additionalFields'] as $id => $field) 
 						,{{ $field['attribute'] ?? $field }}: $('{{ $id }}').val() === "" ? "{{ $field['defaultValue'] ?? '' }}" : $('{{ $id }}').val()
@@ -135,10 +139,10 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 		            		'<td>' + v.{{ $field['attribute'] ?? $field }} + '</td>' +
 						@endforeach
 	            		'<td>' + 
-	            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.id +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
+	            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
 	            		 '</td>' +
 	            		 '<td style="display:none">' +
-	            			'<input type="hidden" value="'+ v.id +'" name="{{$name}}[]">' +
+	            			'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">' +
 		            		 @foreach ($config['additionalFields'] as $id => $field) 
 		            			'<input type="hidden" value="'+ v.{{ $field['attribute'] ?? $field }} +'" name="{{ $field['attribute'] ?? $field }}[]">' +
 							 @endforeach
@@ -165,10 +169,10 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	function getSelectedVal_{{$name}}(id, update = false) {
 		var foundVal = $.grep(select2val_{{$name}}, function(v) {
 			if(update){
-				console.log(v.id + ' : ' + id)
-				return v.id != id
+				console.log(v.{{ $config['key'] }} + ' : ' + id)
+				return v.{{ $config['key'] }} != id
 			}
-		    return v.id == id;
+		    return v.{{ $config['key'] }} == id;
 		});
 
 		if(update) {
