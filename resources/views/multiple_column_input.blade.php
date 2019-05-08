@@ -36,6 +36,7 @@ $isFirst = true;
 						<tbody>
 							<?php $index = 1 ?>
 							@foreach ($values as $v)
+							<?php $v = is_array($v) ? $v : collect($v)->toArray() ?>
 							<tr class="multipleColumnRow">
 								@foreach ($columns as $key => $column)
 
@@ -50,7 +51,7 @@ $isFirst = true;
 									<td {!! $column['type'] == 'hidden' ? "style='display: none'" : ($column['options'] ?? '') !!}>
 										@if ($column['type'] == 'select2')
 											{{ 
-												Form::select2Input($column['name'], null, $column['data'], [
+												Form::select2Input($column['name'], [Illuminate\Support\Arr::get($v, $column['value'][0] ?? ''), Illuminate\Support\Arr::get($v, $column['value'][1] ?? '')], $column['data'], [
 													'key' => 'schema',
 													'useLabel' => false,
 													'elOptions' => [
@@ -147,20 +148,5 @@ $isFirst = true;
 	$('body').on('click', '.multipleColumnInput_addRowBtn-{{  $name  }}', function(){
 		generateRow_{{ $name }}();
 	})
-
-	$(document).ready(function() {
-	<?php $index = 1; ?>
-
-	// FOR SELECT2 SET VALUE
-	@foreach ($values as $v)
-		@foreach ($columns as $column)
-			<?php $column['type'] = $column['type'] ?? 'text' ?>
-			@if ($column['type'] == 'select2')
-				setSelect2IfPatchModal($('{{ "#multipleColumnRow_select2-" . $column['name'] . "_" . $index }}'), "{{ Illuminate\Support\Arr::get($v, $column['value'][0] ?? '') }}", "{{ Illuminate\Support\Arr::get($v, $column['value'][1] ?? '') }}")
-			@endif
-		@endforeach
-		<?php $index++ ?>
-	@endforeach
-	});
 </script>
 @endpush

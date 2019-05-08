@@ -12,7 +12,7 @@ $config['pluginOptions'] = array_merge([
 ], $config['pluginOptions'] ?? [])
 @endphp
 
-<div class="form-group {{ !$errors->has($name) ?: 'has-error' }}">
+<div class="form-group {{ !$errors->has($name) ?: 'has-danger' }}">
 	@if ($config['useLabel'])
 	<div class="row">
 		<div class="{{ $config['labelContainerClass'] }}">
