@@ -16,7 +16,7 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 			@if (!empty($config['addonsConfig']))
 			<div class="input-group">
 				@if ($config['addonsConfig']['position'] === 'left')
-				<span class="input-group-addon addon-left-side">{{ $config['addonsConfig']['text'] }}</span>
+				<span class="{{ $config['addons']['class'] }} addon-left-side">{{ $config['addonsConfig']['text'] }}</span>
 				@endif
 			@endif
 
@@ -24,7 +24,7 @@ $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 
 			@if (!empty($config['addonsConfig']))
 				@if ($config['addonsConfig']['position'] === 'right')
-				<span class="input-group-addon addon-right-side">{{ $config['addonsConfig']['text'] }}</span>
+				<span class="{{ $config['addons']['class'] }} addon-right-side">{{ $config['addonsConfig']['text'] }}</span>
 				@endif
 			</div>
 			@endif
