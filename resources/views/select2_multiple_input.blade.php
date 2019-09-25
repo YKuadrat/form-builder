@@ -151,7 +151,7 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 
 				@if ($useDatatable)
 					select2table_{{ $name }}.row.add([
-						'New',
+						-1,
 						v.text,
 						'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>',
 						'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">',
