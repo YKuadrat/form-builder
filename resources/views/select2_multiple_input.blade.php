@@ -1,6 +1,8 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 
+$useDatatable = $attributes['useDatatable'] ?? false;
+
 // SET DEFAULT CLASS
 $attributes['elOptions']['class'] = 'select2 form-control';
 
@@ -53,12 +55,28 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 									<th>{{ ucwords(str_replace('_', ' ', $label['attribute'] ?? $label)) }}</th>
 								@endforeach
 								<th>Action</th>
+								<th style="display: none"></th>
 							</tr>
 						</thead>
 						<tbody>
+							@if ($useDatatable)
+								@foreach ($value as $i => $v)
+									<tr>
+										<td>{{ $i+1 }}</td>
+										<td>{{ $v['name'] }}</td>
+										<td> 
+					            		 	<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="{{ $v[$config['key']] }}" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>  
+					            		 </td>
+					            		 <td style="display: none">
+					            			<input type="hidden" value="{{ $v[$config['key']] }}" name="{{$name}}[]">
+					            		 </td>
+									</tr>
+								@endforeach
+							@else
 							<tr>
 								<td colspan="3">{{$config['customLabel']}} is Empty.</td>
 							</tr>
+							@endif
 						</tbody>
 					</table>
 				</div>
@@ -74,7 +92,11 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	@endif
 </div>
 
-@push('vendor-css')
+@push('additional-css')
+	@if ($useDatatable)
+		{!! $attributes['datatableCSSAssets'] ?? '<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">' !!}
+	@endif
+
 <style type="text/css">
 	.select2-container--default .select2-selection--multiple{
 		border-top-right-radius: 0 !important; 
@@ -83,8 +105,18 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 @endpush
 
 @push('additional-js')
+	@if ($useDatatable)
+		{!! 
+			$attributes['datatableJSAssets'] ?? '
+			<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+			<script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+			' 
+		!!}
+		
+	@endif
+
 <script type="text/javascript">
-	var select2val_{{$name}} = {!! json_encode($value) !!};
+	var select2table_{{ $name }}, select2val_{{$name}} = {!! json_encode($value) !!};
 
 	function addSelectedVal_{{$name}}(){
 		$.each($('#{{$config['elOptions']["id"]}}').select2('data'), function(k, v){
@@ -116,7 +148,18 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 						,{{ $field['attribute'] ?? $field }}: $('{{ $id }}').val() === "" ? "{{ $field['defaultValue'] ?? '' }}" : $('{{ $id }}').val()
 					@endforeach
 				})
-				generateTable_{{$name}}()
+
+				@if ($useDatatable)
+					select2table_{{ $name }}.row.add([
+						'New',
+						v.text,
+						'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>',
+						'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">',
+					]).draw()
+				@else
+					generateTable_{{$name}}()
+				@endif
+
 			    $('#{{$config['elOptions']["id"]}}').val({}).trigger('change');
 			    @foreach ($config['additionalFields'] as $id => $field) 
 			    	$('{{ $id }}').val('')
@@ -126,29 +169,34 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	}
 
 	function generateTable_{{$name}}() {
+		@if ($useDatatable)
+			select2table_{{ $name }} = $('.{{'table-select2-' . $name}}').DataTable({
+				pagingType: 'numbers'
+			});
+		@else
 		resetTable_{{$name}}()
-
 		if (select2val_{{$name}}.length > 0) {
 			$.each(select2val_{{$name}}, function(k, v) {
 				var number = k+1;
-	            $(".{{'table-select2-' . $name}} tbody").append(
-	            	'<tr>' +
-	            		'<td>' + number + '</td>' +
-	            		'<td>' + v.name + '</td>' +
-	            		@foreach ($config['additionalFields'] as $id => $field) 
-		            		'<td>' + v.{{ $field['attribute'] ?? $field }} + '</td>' +
-						@endforeach
-	            		'<td>' + 
-	            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
-	            		 '</td>' +
-	            		 '<td style="display:none">' +
-	            			'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">' +
-		            		 @foreach ($config['additionalFields'] as $id => $field) 
-		            			'<input type="hidden" value="'+ v.{{ $field['attribute'] ?? $field }} +'" name="{{ $field['attribute'] ?? $field }}[]">' +
-							 @endforeach
-	            		 '</td>' +
-	            	'</tr>' 
-	            )
+
+		            $(".{{'table-select2-' . $name}} tbody").append(
+		            	'<tr>' +
+		            		'<td>' + number + '</td>' +
+		            		'<td>' + v.name + '</td>' +
+		            		@foreach ($config['additionalFields'] as $id => $field) 
+			            		'<td>' + v.{{ $field['attribute'] ?? $field }} + '</td>' +
+							@endforeach
+		            		'<td>' + 
+		            		 	'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>' +  
+		            		 '</td>' +
+		            		 '<td style="display:none">' +
+		            			'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">' +
+			            		 @foreach ($config['additionalFields'] as $id => $field) 
+			            			'<input type="hidden" value="'+ v.{{ $field['attribute'] ?? $field }} +'" name="{{ $field['attribute'] ?? $field }}[]">' +
+								 @endforeach
+		            		 '</td>' +
+		            	'</tr>' 
+		            )
 	        });
 		} else {
 			$(".{{'table-select2-' . $name}} tbody").append(
@@ -157,13 +205,21 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 	        	'</tr>' 
 	        )
 		}
+		@endif
 	}
 
 	// Remove Selected Data
 	$(".{{'table-select2-' . $name}} tbody").on('click', '.removeSelectedDataBtn_{{$name}}', function(){
-		getSelectedVal_{{$name}}($(this).attr('data-id'), true)
-		$(this).closest('tr').remove()
-		generateTable_{{$name}}()
+		if (confirm('Are you sure want to delete this?')) {
+			getSelectedVal_{{$name}}($(this).attr('data-id'), true)
+
+			@if ($useDatatable)
+				select2table_{{ $name }}.row( $(this).parents('tr') ).remove().draw(false);
+			@else
+				$(this).closest('tr').remove()
+				generateTable_{{$name}}()
+			@endif
+		}
 	})
 
 	function getSelectedVal_{{$name}}(id, update = false) {
