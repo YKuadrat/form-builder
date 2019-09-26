@@ -153,8 +153,8 @@ $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 					select2table_{{ $name }}.row.add([
 						-1,
 						v.text,
-						'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.{{ $config['key'] }} +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>',
-						'<input type="hidden" value="'+ v.{{ $config['key'] }} +'" name="{{$name}}[]">',
+						'<button class="btn btn-danger btn-sm removeSelectedDataBtn_{{$name}}" type="button" data-id="'+ v.id +'" title="Remove this {{$name}}" data-toggle="tooltip"><i class="fa fa-times"></i></button>',
+						'<input type="hidden" value="'+ v.id +'" name="{{$name}}[]">',
 					]).draw()
 				@else
 					generateTable_{{$name}}()
