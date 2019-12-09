@@ -27,7 +27,7 @@ $isFirst = true;
 								@foreach ($columns as $column)
 									<?php $column['type'] = $column['type'] ?? 'text'; ?>
 									@if ($column['type'] != 'hidden')
-										<th>{{ ucwords(implode(' ', explode('_', $column['name']))) }}</th>
+										<th>{!! $column['label'] ?? ucwords(implode(' ', explode('_', $column['name']))) !!}</th>
 									@endif
 								@endforeach
 								<th>Action</th>
@@ -40,7 +40,7 @@ $isFirst = true;
 							<tr class="multipleColumnRow">
 								@foreach ($columns as $key => $column)
 
-									<?php 
+									<?php
 										$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 											'class' => 'form-control'
 										], $column['elOptions'] ?? []));
@@ -49,18 +49,24 @@ $isFirst = true;
 									?>
 
 									<td {!! $column['type'] == 'hidden' ? "style='display: none'" : ($column['options'] ?? '') !!}>
-										@if ($column['type'] == 'select2')
-											{{ 
-												Form::select2Input($column['name'], [Illuminate\Support\Arr::get($v, $column['value'][0] ?? ''), Illuminate\Support\Arr::get($v, $column['value'][1] ?? '')], $column['data'], [
-													'key' => 'schema',
-													'useLabel' => false,
-													'elOptions' => [
-														'name' => $name .'['. $index .']['. $column['name'] .']',
-
-														'id' => "multipleColumnRow_select2-" . $column['name'] . "_" . $index
-													]
-												]) 
-											}}
+                                        @php
+                                            $options = $column['fieldOptions'];
+                                            $options['useLabel'] = false;
+                                            $options['elOptions'] = array_merge($column['fieldOptions']['elOptions'] ?? [], [
+                                                'name' => $name .'['. $index .']['. $column['name'] .']',
+                                            ]);
+                                        @endphp
+                                        @if ($column['type'] == 'select2')
+                                            @php
+                                                $options['elOptions']['id'] = "multipleColumnRow_select2-" . $column['name'] . "_" . $index;
+                                            @endphp
+											{{
+												Form::select2Input($column['name'], [Illuminate\Support\Arr::get($v, $column['value'][0] ?? ''), Illuminate\Support\Arr::get($v, $column['value'][1] ?? '')], $column['data'], $options)
+                                            }}
+                                        @elseif($column['type'] == 'textarea')
+                                            {{
+                                                Form::textareaInput($column['name'], $v[$column['name']] ?? '', $options)
+                                            }}
 										@else
 											<input type="{{ $column['type'] }}" value="{{ $v[$column['name']] ?? '' }}" name="{{ $name .'['. $index .']['. $column['name'] .']' }}" {!! $column['htmlOptions'] !!}>
 										@endif
@@ -81,7 +87,7 @@ $isFirst = true;
 				</div>
 
 				@if($errors->has($name))
-				<span id="helpBlock2" class="help-block">{{ $errors->first($name) }}</span>	
+				<span id="helpBlock2" class="help-block">{{ $errors->first($name) }}</span>
 				@endif
 
 			</div>
@@ -105,21 +111,29 @@ $isFirst = true;
 		lastRow_{{ $name }} = lastRow_{{$name}} == 0 ? key : ++lastRow_{{$name}};
 
 		@foreach ($columns as $column)
-		
-			<?php 
+
+			<?php
 				$column['htmlOptions'] = FormBuilderHelper::arrayToHtmlAttribute(array_merge([
 					'class' => 'form-control'
 				], $column['elOptions'] ?? []));
 
-				$column['type'] = $column['type'] ?? 'text'
+                $column['type'] = $column['type'] ?? 'text';
+
+                $options = $column['fieldOptions'];
+                $options['useLabel'] = false;
+                $options['elOptions'] = array_merge($column['fieldOptions']['elOptions'] ?? [], [
+                    'name' => $name .'['. $index .']['. $column['name'] .']',
+                ]);
 			?>
 
-			multipleColumn_columns_{{ $name }} += '<td {!! $column['type'] == 'hidden' ? "style=\"display: none\"" : ($column['options'] ?? '') !!}>' + 
+			multipleColumn_columns_{{ $name }} += '<td {!! $column['type'] == 'hidden' ? "style=\"display: none\"" : ($column['options'] ?? '') !!}>' +
 
 				@if ($column['type'] == 'select2')
-					'<select name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" id="multipleColumnRow_select2-{{ $column['name'] }}_' + lastRow_{{ $name }} + '"> </select>'
+                    '<select name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" id="multipleColumnRow_select2-{{ $column['name'] }}_' + lastRow_{{ $name }} + '"> </select>'
+                @elseif($column['type'] == 'textarea')
+                    `{!! Form::textareaInput($column['name'], $v[$column['name']] ?? '', $options) !!}`
 				@else
-					'<input type="{{ $column['type'] }}" value="" name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" {!! $column['htmlOptions'] !!}>' + 
+					'<input type="{{ $column['type'] }}" value="" name="{{ $name }}[' + lastRow_{{ $name }} + '][{{ $column['name'] }}]" {!! $column['htmlOptions'] !!}>' +
 				@endif
 
 			'</td>'
