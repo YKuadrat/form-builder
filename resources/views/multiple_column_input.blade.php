@@ -50,7 +50,7 @@ $isFirst = true;
 
 									<td {!! $column['type'] == 'hidden' ? "style='display: none'" : ($column['options'] ?? '') !!}>
                                         @php
-                                            $options = $column['fieldOptions'];
+                                            $options = $column['fieldOptions'] ?? [];
                                             $options['useLabel'] = false;
                                             $options['elOptions'] = array_merge($column['fieldOptions']['elOptions'] ?? [], [
                                                 'name' => $name .'['. $index .']['. $column['name'] .']',
@@ -119,7 +119,7 @@ $isFirst = true;
 
                 $column['type'] = $column['type'] ?? 'text';
 
-                $options = $column['fieldOptions'];
+                $options = $column['fieldOptions'] ?? [];
                 $options['useLabel'] = false;
                 $options['elOptions'] = array_merge($column['fieldOptions']['elOptions'] ?? [], [
                     'name' => $name .'['. $index .']['. $column['name'] .']',
